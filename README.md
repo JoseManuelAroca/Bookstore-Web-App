@@ -10,7 +10,7 @@ This project is a simple web application for managing books in a bookstore. The 
 
 This application was developed using the following technologies:
 
-- Spring Boot 2.5.0
+- Spring Boot 3.0.5
 - MySQL 8.0.23
 - JPA 2.2.3
 - Thymeleaf 3.0.12
