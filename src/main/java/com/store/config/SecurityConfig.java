@@ -60,7 +60,7 @@ https://www.baeldung.com/spring-security-csrf
                 .requestMatchers("/img/**").permitAll()
                 .requestMatchers("/css/**").permitAll()
                 .requestMatchers("/fonts/**").permitAll()
-                .requestMatchers("/usuarios/registro").permitAll()
+                .requestMatchers("/usuarios/registro","/home").permitAll()
                 .requestMatchers( HttpMethod.POST,"/**").permitAll()
                 .anyRequest().authenticated()
 
