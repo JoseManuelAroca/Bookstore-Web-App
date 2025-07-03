@@ -4,11 +4,14 @@ import com.store.config.service.IUsuarioService;
 import com.store.dto.LoginDto;
 import com.store.dto.RoleDto;
 import com.store.dto.UsuarioDto;
+import com.store.entity.Role;
 import com.store.entity.Usuario;
 import com.store.services.RoleService;
 import com.store.services.UsuarioService;
 import com.store.util.GetBCryptPasswordEncoder;
 import com.store.util.ValidarFormatoPassword;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -46,8 +49,10 @@ public class UsuarioController {
         //¿es correcta la password?
         if (service.getRepo().repValidarPassword(usr, encoder.bCryptPasswordEncoder().encode(password)  ) > 0)
         {
+            System.out.println("login ok" );
             return "home";
         }else {
+            System.out.println("login ko" );
             return "usuarios/login";
         }
     }
@@ -65,10 +70,10 @@ public class UsuarioController {
         //Instancia en memoria del dto a informar en la pantalla
         final UsuarioDto usuarioDto = new UsuarioDto();
         //Obtengo la lista de roles
-        final List<RoleDto> roleDTOList = roleService.buscarTodos();
+        final List<Role> rolelist = roleService.buscarEntidades();
         //Mediante "addAttribute" comparto con la pantalla
         interfazConPantalla.addAttribute("datosUsuario",usuarioDto);
-        interfazConPantalla.addAttribute("listaRoles",roleDTOList);
+        interfazConPantalla.addAttribute("listaRoles",rolelist);
         System.out.println("Preparando pantalla registro");
         return "usuarios/registro";
     }

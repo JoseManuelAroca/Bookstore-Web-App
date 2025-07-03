@@ -1,14 +1,13 @@
 package com.store.controller;
 
+import com.store.config.details.ImprovedUserDetails;
 import com.store.entity.Book;
 import com.store.entity.MyBookList;
-import com.store.entity.Usuario;
 import com.store.services.BookService;
 import com.store.services.MyBookService;
 import com.store.services.UsuarioService;
+import com.store.util.GetContexHolder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -27,47 +26,38 @@ public class BookController {
     @Autowired
     private MyBookService myBookService ;
 
+    private GetContexHolder getContexHolder;
+
     private final UsuarioService usuarioService;
 
-    public BookController(UsuarioService usuarioService) {
+    public BookController(GetContexHolder getContexHolder, UsuarioService usuarioService) {
+        this.getContexHolder = getContexHolder;
         this.usuarioService = usuarioService;
     }
 
     @GetMapping("/")
     public ModelAndView home1(){
-        //acceso a la cookie de seguridad en el servidor
-        System.out.println(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
-        String userName = "";
-        //Comprobamos si hay usuario logeado
-        if (SecurityContextHolder.getContext().getAuthentication().getPrincipal().equals("anonymousUser")){
-            userName = "anonimo@anonimo";
-        }
-        else {
-            userName = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
-            //Si quiero el id el usuario necesito llamara a la base de datos
-            Usuario usuario = usuarioService.getRepo().findUsuarioByEmail(userName);
-            System.out.println("El id del usuario es:");
-            System.out.println(usuario.getId());
-        }
-        System.out.println("El mombre de usuario es :" + userName );
-
+        ImprovedUserDetails improvedUserDetails = getContexHolder.GetCookieImproved();
+        System.out.println("home1: el usuario es:" + improvedUserDetails.getUsername());
+        System.out.println("home1: el usuario tiene perro:" + improvedUserDetails.getNombredemiperro());
 
         return new ModelAndView("home");
     }
     @GetMapping("/home")
     public ModelAndView home(){
-        //acceso a la cookie de seguridad en el servidor
-        System.out.println(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
-        String userName = "";
-        //Comprobamos si hay usuario logeado
-        if (SecurityContextHolder.getContext().getAuthentication().getPrincipal().equals("anonymousUser")){
-            userName = "anonimo@anonimo";
-        }
-        else {
-            userName = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
-        }
-        System.out.println("El mombre de usuario es :" + userName );
+
+        ImprovedUserDetails improvedUserDetails = getContexHolder.GetCookieImproved();
+        System.out.println("home: el usuario es:" + improvedUserDetails.getUsername());
+        System.out.println("home: el usuario tiene perro:" + improvedUserDetails.getNombredemiperro());
         return new ModelAndView("home");
+    }
+    @GetMapping("/demosec")
+    public ModelAndView demosec(){
+
+        ImprovedUserDetails improvedUserDetails = getContexHolder.GetCookieImproved();
+        System.out.println("home: el usuario es:" + improvedUserDetails.getUsername());
+        System.out.println("home: el usuario tiene perro:" + improvedUserDetails.getNombredemiperro());
+        return new ModelAndView("demothymeleafsecurity");
     }
     @GetMapping("/book_register")
     public ModelAndView bookRegister(){

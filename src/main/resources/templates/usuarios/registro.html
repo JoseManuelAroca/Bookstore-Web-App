@@ -25,7 +25,15 @@
                 <li class="nav-item">
                     <a class="nav-link text-white" href="/my_books">My Books</a>
                 </li>
-
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="/usuarios/login">Login</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="/usuarios/logout">Logout</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="/usuarios/registro">New user</a>
+                </li>
             </ul>
             <div>
                 <a  class="nav-link text-white" href="/book_register">New Book Register</a>
@@ -69,14 +77,16 @@
                                         </div>
                                         <div class="d-flex flex-row align-items-center mb-4">
                                             <div class="form-outline flex-fill mb-0">
-                                                <label class="form-label" for="inputRoles">Roles:</label>
-                                                <input type="checkbox"  name="roles" id="inputRoles"
-                                                       th:align="center"
-                                                       th:each="role_item : ${listaRoles}"
-                                                       th:text="${role_item.roleName}"
-                                                       th:value="${role_item.id}"
-                                                       th:field="*{roles}"
-                                                />
+                                                <label for="roles"  class="form-label mt-2 mb-1" >Roles</label>
+                                                <select th:field="*{roles}" class="form-control"  id="roles" >
+                                                    <option value="" th:disabled="disabled" th:selected="selected"  text="Select items">
+
+                                                    </option>
+                                                    <th:block th:each="roleitem: ${listaRoles}" >
+                                                        <option th:value="${roleitem.id}" th:text="${roleitem.roleName}"></option>
+                                                    </th:block>
+
+                                                </select>
                                             </div>
                                         </div>
 

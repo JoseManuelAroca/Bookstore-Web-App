@@ -2,12 +2,15 @@ package com.store.services;
 
 
 
+import com.store.config.details.ImprovedUserDetails;
 import com.store.dto.UsuarioDto;
 import com.store.entity.Usuario;
 import com.store.repository.UsuarioRepository;
 import com.store.services.mapper.UsuarioMapper;
+import com.store.util.GetContexHolder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Iterator;
@@ -19,7 +22,7 @@ public class UsuarioService   extends AbstractBusinessService<Usuario,Integer, U
         UsuarioRepository, UsuarioMapper>   {
     //
 
-
+    private GetContexHolder getContexHolder;
     //Acceso a los datos de la bbdd
     public UsuarioService(UsuarioRepository repo, UsuarioMapper serviceMapper) {
 
@@ -35,6 +38,7 @@ public class UsuarioService   extends AbstractBusinessService<Usuario,Integer, U
         //Traducir la entidad a DTO para devolver el DTO
         return getMapper().toDto(entidadGuardada);
     }
+
 
 
 }

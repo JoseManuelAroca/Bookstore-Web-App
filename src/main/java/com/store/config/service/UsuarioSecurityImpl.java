@@ -1,5 +1,6 @@
 package com.store.config.service;
 
+import com.store.config.details.ImprovedUserDetails;
 import com.store.entity.Role;
 import com.store.entity.Usuario;
 import com.store.repository.UsuarioRepository;
@@ -12,6 +13,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -49,7 +51,7 @@ public class UsuarioSecurityImpl  implements IUsuarioService, UserDetailsService
         return encodedPasswod;
     }
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    /*public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         System.out.println("loadUserByUsername email : " + email);
         Usuario  usuario= usuarioRepository.findUsuarioByEmail(email);
         System.out.println("loadUserByUsername usuario : " + usuario.getNombreUsuario());
@@ -65,5 +67,35 @@ public class UsuarioSecurityImpl  implements IUsuarioService, UserDetailsService
                 usuario.getPassword(),
                 ga );
         return springUser;
+    }
+    */
+    public ImprovedUserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        System.out.println("loadUserByUsername email : " + email);
+        Usuario  usuario= usuarioRepository.findUsuarioByEmail(email);
+        System.out.println("loadUserByUsername usuario : " + usuario.getNombreUsuario());
+
+        //Crear nuestra clase
+        ImprovedUserDetails improvedUserDetails = new ImprovedUserDetails();
+        improvedUserDetails.setUsername(usuario.getEmail());
+        improvedUserDetails.setPassword(usuario.getPassword());
+        improvedUserDetails.setUserID((int) usuario.getId());
+        improvedUserDetails.setNombredemiperro("Duna");
+        //falta el grantedauthorities
+        improvedUserDetails.setAuthorities(mapRolesToAuthorities(usuario.getRoles()));
+        System.out.println("cookie creada");
+        return improvedUserDetails;
+    }
+    /**
+     * Esta función auxiliar se utiliza para convertir la lista de roles del usuario en una colección de
+     * autoridades que pueden ser utilizadas por Spring Security.
+     *
+     * @param roles Lista de roles del usuario.
+     * @return Collection< ? extends GrantedAuthority> Colección de autoridades.
+     */
+    private Collection< ? extends GrantedAuthority> mapRolesToAuthorities(Set<Role> roles) {
+        // Utilizar streams de Java para mapear cada rol a una instancia de SimpleGrantedAuthority
+        return roles.stream()
+                .map(role -> new SimpleGrantedAuthority(role.getRoleName()))
+                .toList(); // Convertir el stream en una lista
     }
 }
