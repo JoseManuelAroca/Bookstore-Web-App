@@ -13,8 +13,12 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -71,17 +75,57 @@ public class UsuarioSecurityImpl  implements IUsuarioService, UserDetailsService
     */
     public ImprovedUserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         System.out.println("loadUserByUsername email : " + email);
-        Usuario  usuario= usuarioRepository.findUsuarioByEmail(email);
-        System.out.println("loadUserByUsername usuario : " + usuario.getNombreUsuario());
-
-        //Crear nuestra clase
+        Optional<Usuario> usuario= usuarioRepository.findUsuarioByEmail(email);
         ImprovedUserDetails improvedUserDetails = new ImprovedUserDetails();
-        improvedUserDetails.setUsername(usuario.getEmail());
-        improvedUserDetails.setPassword(usuario.getPassword());
-        improvedUserDetails.setUserID((int) usuario.getId());
-        improvedUserDetails.setNombredemiperro("Duna");
-        //falta el grantedauthorities
-        improvedUserDetails.setAuthorities(mapRolesToAuthorities(usuario.getRoles()));
+        if(usuario.isPresent()){
+            System.out.println("loadUserByUsername usuario : " + usuario.get().getNombreUsuario());
+
+            //Crear nuestra clase
+            improvedUserDetails.setUsername(usuario.get().getEmail());
+            improvedUserDetails.setPassword(usuario.get().getPassword());
+            improvedUserDetails.setUserID((int) usuario.get().getId());
+            improvedUserDetails.setNombredemiperro("Duna");
+            //falta el grantedauthorities
+            improvedUserDetails.setAuthorities(mapRolesToAuthorities(usuario.get().getRoles()));
+            //Solo si el usuario está genero sus clave pública y privada
+            //creamos la clave pulbico/privada
+            KeyPairGenerator keyPairGenerator = null;
+            try {
+                keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+            } catch (NoSuchAlgorithmException e) {
+                throw new RuntimeException(e);
+            }
+            keyPairGenerator.initialize(512);
+            KeyPair keyPair = keyPairGenerator.generateKeyPair();
+            //Almacenamos los datos a nivel de usuario y de cookie de seguridad
+            improvedUserDetails.setPublickey(keyPair.getPublic());
+            improvedUserDetails.setPrivatekey(keyPair.getPrivate());
+            //Actualizamos el usuario
+            Usuario usuarioGuardar = usuario.get();
+            usuarioGuardar.setPublickey(keyPair.getPublic().getEncoded());
+            usuarioGuardar.setPrivatekey(keyPair.getPrivate().getEncoded());
+        } else{
+            //Busco los roles de anonimo
+            Optional<Usuario> usuarioanonimo= usuarioRepository.findUsuarioByEmail("anonimoa@anonimo.com");
+
+            if (usuarioanonimo.isPresent()){
+                //Crear nuestra clase
+                improvedUserDetails.setUsername(usuario.get().getEmail());
+                improvedUserDetails.setPassword(usuario.get().getPassword());
+                improvedUserDetails.setUserID((int) usuario.get().getId());
+                improvedUserDetails.setNombredemiperro("Duna");
+                //falta el grantedauthorities
+                improvedUserDetails.setAuthorities(mapRolesToAuthorities(usuario.get().getRoles()));
+
+            } else {
+                improvedUserDetails.setUsername("anonimoa@anonimo.com");
+                improvedUserDetails.setNombredemiperro("no encontrado");
+            }
+
+        }
+
+
+
         System.out.println("cookie creada");
         return improvedUserDetails;
     }

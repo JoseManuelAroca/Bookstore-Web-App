@@ -27,6 +27,11 @@ public class Usuario  implements Serializable {
         @Column (name ="password",length = 250)
         private String password;
 
+        @Lob
+        private byte[] publickey;
+        @Lob
+        private byte[] privatekey;
+
         @ManyToMany(fetch = FetchType.EAGER)
         private Set<Role> roles;
 

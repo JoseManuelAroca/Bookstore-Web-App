@@ -7,6 +7,8 @@ import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.util.Collection;
 
 /**
@@ -26,7 +28,8 @@ public class ImprovedUserDetails implements UserDetails {
     private Integer userID;
     private String nombredemiperro;
 
-
+    private PrivateKey privatekey;
+    private PublicKey publickey;
 
     private boolean isActive=true;
     private boolean isAccountNonExpired=true;
